@@ -5,6 +5,7 @@ Presents fresh video search results.
 <link rel="import" href="../services/youtube-search.html">
 <link rel="import" href="../bower_components/paper-fab/paper-fab.html">
 <link rel="import" href="../bower_components/core-signals/core-signals.html">
+<link rel="import" href="../bower_components/core-icons/core-icons.html">
 <link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="utube-card.html">
 
@@ -41,6 +42,17 @@ Presents fresh video search results.
       padding: 50px;
       margin: 0 auto;
     }
+
+    .cat {
+      width: 300px; 
+      height: 300px;
+    }
+
+    .placeholder {
+      color: #00BCD4;
+      font-size: 1rem;
+    }
+
     </style>
     
    <youtube-search id="service" posts="{{posts}}">
@@ -50,8 +62,14 @@ Presents fresh video search results.
    <paper-fab class="saved" hidden?="{{saved}}" icon="check"></paper-fab>
 
    <core-signals on-core-signal-results-loaded="{{activateSave}}"></core-signals>
+   <core-signals on-core-signal-search-tap="{{hideCat}}"></core-signals>
 
    <div class="results">
+
+    <div class="placeholder" hidden?="{{catHidden}}" vertical center layout>
+    <core-icon class="cat" src="../images/cat.svg"></core-icon>
+    <p>search, view and save (cat?) videos</p>
+    </div>
 
     <template repeat="{{post in posts}}">
       <utube-card on-tap="{{videoClicked}}" class="card">
@@ -79,9 +97,15 @@ Presents fresh video search results.
 
     dialogVisible: false,
 
+    catHidden: false,
+
     activateSave: function(){
       this.isHidden = false;
       this.saved = true;
+    },
+
+    hideCat: function(){
+      this.catHidden = true;
     },
 
     handleSave: function(event, detail, sender){
