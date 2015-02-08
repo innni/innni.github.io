@@ -1,0 +1,211 @@
+<!--
+Presents video lists saved by the user.
+-->
+<link rel="import" href="../services/utube-storage.html">
+<link rel="import" href="../bower_components/core-icon-button/core-icon-button.html">
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/core-signals/core-signals.html">
+<link rel="import" href="../bower_components/core-animated-pages/core-animated-pages.html">
+<link rel="import" href="../bower_components/core-toolbar/core-toolbar.html">
+<link rel="import" href="../bower_components/core-icons/core-icons.html">
+<link rel="import" href="../bower_components/core-style/core-style.html">
+<link rel="import" href="../bower_components/core-header-panel/core-header-panel.html">
+<link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../components/utube-embed.html">
+<link rel="import" href="../components/utube-card.html">
+
+<polymer-element name="utube-saved-results" attributes="show">
+
+  <template>
+    <style>
+    :host {
+      display: block;
+      width: 100%;
+     
+    }
+
+    #container {
+      overflow: hidden;
+    }
+
+    #noscroll {
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
+
+    .card {
+      background: #D4E157;
+      margin: 10px;
+      font: 0.5rem;
+      display: inline-block;
+      width: 300px;
+      padding: 10px;
+      cursor: pointer;
+    }
+
+    .card h2, .results h2 {
+      font-weight: 300;
+    }
+
+    html /deep/ paper-dialog {
+      background: #263238;
+    }
+
+    .ucard {
+      color: #FAFAFA;
+      background: #263238;
+      margin: 10px;
+      font: 0.5rem;
+      display: inline-block;
+      width: 300px;
+      min-height: 300px;
+      cursor: pointer;
+    }
+
+    .ucard p {
+      line-height: 1.1rem;
+      color: EEEEEE;
+    }
+
+    .results {
+      padding: 50px;
+      margin: 0 auto;
+    }
+
+    .results h2 {
+      font-size: 2rem;
+      padding-left: 1rem;
+    }
+
+    .view {
+      position: absolute;
+      top: 0;
+      left: 0;
+      background-color: #D4E157;
+      display: block;
+      width: 100%;
+    }
+
+    .delete-icon {
+      color: #E53935;
+    }
+
+    .delete-icon-vid {
+      color: #E91E63;
+      position: absolute;
+      top: 0;
+      right: 0;
+    }
+
+  </style>
+
+  <core-signals on-core-signal-results-loaded="{{updateResults}}"></core-signals>
+  <core-signals on-core-signal-search-tap="{{updateQuery}}"></core-signals>
+  <core-signals on-core-signal-save-tap="{{saveResults}}"></core-signals>
+
+  <utube-storage id="storage" posts="{{posts}}"></utube-storage>
+
+  <core-animated-pages id="pages" selected="0" on-core-animated-pages-transition-end="{{complete}}" transitions="hero-transition cross-fade">
+     
+    <section id="search-list">
+      <div class="results">
+        <template repeat="{{post in posts}}">
+          <div class="card" on-tap="{{viewTapped}}" hero-id="hero-{{post.id}}" hero>
+            <div horizontal layout center>
+            <h2 flex>{{post.title}}</h2>
+            <core-icon-button class="view-icon" icon="visibility" on-tap="{{viewTapped}}">
+            </core-icon-button>
+            <core-icon-button class="delete-icon" icon="delete" on-tap="{{deleteTapped}}">
+            </core-icon-button>
+          </div>
+          </div>
+        </template>
+      </div>
+    </section>
+
+    <template repeat="{{post in posts}}">
+      <section id="{{post.title}}" vertical layout>
+          <div class="view" vertical layout hero-id="hero-{{post.id}}" hero>
+            <div class="results">
+              <div horizontal layout center>
+                <core-icon-button icon="arrow-back" on-tap="{{backTapped}}"></core-icon-button>
+                <h2 flex>{{post.title}}</h2>
+              </div>
+              <template repeat="{{video in post.results.items}}">
+                <utube-card on-tap="{{videoClicked}}" class="ucard">
+                  <img src="{{video.snippet.thumbnails.medium.url}}">
+                  <h2>{{video.snippet.title}}</h2>
+                  <p>{{video.snippet.description}}
+                    <core-icon-button class="delete-icon-vid" icon="delete" on-tap="{{removeVideo}}">
+                    </core-icon-button>
+                  </p>
+                  
+                </utube-card>
+                
+              </template>
+            </div>
+          </div>
+      </section>
+    </template>
+  </core-animated-pages>
+
+  <paper-dialog backdrop opened="{{dialogVisible}}" transition="core-transition-center">
+    <utube-embed videoid="{{dialogVideo}}"></utube-embed>
+  </paper-dialog>
+
+  </template>
+
+  <script>
+  Polymer('utube-saved-results', {
+
+    searchResult: { items: [], nextPageToken: '' },
+
+    dialogVisible: false,
+
+    query: '',
+
+    updateQuery: function(event, detail, sender){
+      this.query = detail;
+    },
+
+    deleteTapped: function(event, detail, sender){
+      event.stopPropagation();
+      var title = sender.templateInstance.model.post.title;
+      this.$.storage.removeResult(title);
+    },
+
+    removeVideo: function(event, detail, sender){
+      event.stopPropagation();
+      var searchID = this.$.pages.selected;
+      var videoID = sender.templateInstance.model.video.id.videoId;
+      this.$.storage.removeVideo(searchID, videoID);
+    },
+
+    viewTapped: function(event, detail, sender){
+      var id = sender.templateInstance.model.post.id;
+      this.$.pages.selected = id;
+    },
+
+    updateResults: function(event, detail, sender){
+      this.searchResult.items = detail.response.items.slice(0);
+      this.searchResult.nextPageToken = detail.response.nextPageToken;
+    },
+
+    saveResults: function(event, detail, sender){
+      this.$.storage.saveResults(this.query, this.searchResult);
+    },
+
+    backTapped: function(event, detail, sender){
+      this.$.pages.selected = 0;
+    },
+
+    videoClicked: function(event, detail, sender){
+      this.dialogVideo = sender.templateInstance.model.video.id.videoId;
+      this.dialogVisible = "true";
+    }
+  });
+
+  </script>
+
+</polymer-element>

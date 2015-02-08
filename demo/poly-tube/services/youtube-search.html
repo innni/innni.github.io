@@ -1,0 +1,60 @@
+
+<!--
+Runs search queries by connecting to Google's Youtube Data API.
+Fires a core signal ("updateResults") when new data is fetched.
+-->
+
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/core-ajax/core-ajax.html">
+<link rel="import" href="../bower_components/core-signals/core-signals.html">
+
+<polymer-element name="youtube-search" attributes="posts part q key">
+  <template>
+
+    <style>
+    :host {
+      display: none;
+    }
+    </style>
+
+    <core-ajax id="ajax"
+      url="{{url}}"
+      params='{"part": "{{part}}", "q": "{{q}}", "key": "{{key}}" }'
+      on-core-response="{{postsLoaded}}"
+      handleAs="json">
+    </core-ajax>
+
+    <core-signals on-core-signal-search-tap="{{updateResults}}"></core-signals>
+
+  </template>
+  <script>
+  Polymer('youtube-search', {
+
+    part: 'snippet',
+
+    key: 'AIzaSyBsa0NARFDnoKLMLpru_jhu5Bei0eEh-jI',
+
+    url: 'https://www.googleapis.com/youtube/v3/search',
+
+    q: '',
+
+    posts: [],
+
+    postsLoaded: function() {
+      this.posts = this.$.ajax.response.items.slice(0);
+      this.fire('core-signal', {name: 'results-loaded', 
+                  data: {response: this.$.ajax.response, query: this.q} });
+    },
+
+    updateResults: function(e, detail, sender){
+      this.changeQ(detail);
+    },
+
+    changeQ: function(q){
+      this.q = q;
+      this.$.ajax.go();
+    }
+
+  });
+  </script>
+</polymer-element>

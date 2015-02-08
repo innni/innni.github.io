@@ -1,0 +1,60 @@
+<!--
+Reusable card component to display each video
+-->
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/core-icon-button/core-icon-button.html">
+
+<polymer-element name="utube-card">
+  <template>
+    <style>
+    :host {
+      display: block;
+      position: relative;
+      background-color: white;
+      padding: 20px;
+      width: 100%;
+      font-size: 1.2rem;
+      font-weight: 300;
+      text-align: center;
+      overflow-x: hidden;
+    }
+
+    .card-header {
+      margin-bottom: 10px;
+    }
+
+    polyfill-next-selector { content: '.card-header h2'; }
+    .card-header ::content h2 {
+      margin: 0;
+      font-size: 1.2rem;
+      font-weight: 300;
+    }
+
+    polyfill-next-selector { content: '.card-header img'; }
+    .card-header ::content img {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      margin: 10px;
+    }
+
+    polyfill-next-selector { content: '.card-header p'; }
+    .card-header ::content p {
+      font-size: 0.8rem;
+    }
+
+    </style>
+
+    <div class="card-header" layout vertical center>
+      <content select="img"></content>
+      <content select="h2"></content>
+      <content select="p"></content>
+    </div>
+
+    
+    
+  </template>
+  <script>
+  Polymer({});
+  </script>
+</polymer-element>

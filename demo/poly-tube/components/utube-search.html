@@ -1,0 +1,70 @@
+<!--
+The search bar. It can be extended to include more advanced search features.
+-->
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-input/paper-input-decorator.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/core-signals/core-signals.html">
+
+<polymer-element name="utube-search" on-results-loaded="{{handleB}}">
+  <template>
+    <style>
+    paper-input-decorator /deep/ ::-webkit-input-placeholder
+    {
+      color: #00838F;
+    }
+    
+    paper-input-decorator /deep/ ::-moz-placeholder {
+      color: #00838F;
+    }
+    paper-input-decorator /deep/ :-ms-input-placeholder {
+      color: #00838F;
+    }
+
+    paper-input-decorator /deep/ .floated-label .label-text
+    {
+      color: #00838F;
+    }
+
+    paper-input-decorator[focused] /deep/ .floated-label .label-text
+    {
+      color: #00838F;
+    }
+
+    paper-input-decorator /deep/ .focused-underline {
+      background-color: #00838F;
+    }
+    </style>
+   
+   <div layout horizontal> 
+    <paper-input-decorator floatingLabel label="Search Youtube" flex>
+      <input id="query" is="core-input"  on-change="{{ searchTapped }}">
+    </paper-input-decorator>
+
+    <paper-icon-button 
+      id="searchbutton" 
+      icon="search"
+      on-tap="{{searchTapped}}"
+      horizontal layout center>
+    </paper-icon-button>
+  </div>
+
+  <content></content>
+    
+  </template>
+  <script>
+  Polymer('utube-search', {
+    publish: {
+      value: ''
+    },
+    searchTapped: function(event, detail, sender){
+      this.value = this.$.query.value;
+      if (this.value !== '') {
+        this.fire('core-signal', {name: 'search-tap', data: this.value});
+        this.fire('search-tap');
+      }
+    }
+  });
+  </script>
+</polymer-element>

@@ -1,0 +1,27 @@
+{
+  "name": "UTube",
+  "version": "0.0.0",
+  "authors": [
+    "Hina Aman <hina@codecyb.org>"
+  ],
+  "description": "Search and Save Youtube Results",
+  "license": "MIT",
+  "homepage": "http://codecyb.org/hina",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#~0.5.4",
+    "paper-elements": "Polymer/paper-elements#~0.5.4",
+    "core-ajax": "Polymer/core-ajax#~0.5.4",
+    "core-signals": "Polymer/core-signals#~0.5.4",
+    "core-pages": "Polymer/core-pages#~0.5.4",
+    "core-animated-pages": "Polymer/core-animated-pages#~0.5.4",
+    "paper-icon-button": "Polymer/paper-icon-button#~0.5.4",
+    "core-tooltip": "Polymer/core-tooltip#~0.5.4"
+  }
+}

@@ -1,0 +1,24 @@
+<!--
+Youtube Video Embedder
+-->
+
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+<polymer-element name="utube-embed"
+         attributes="theme width height videoid">
+
+    <template>
+        <iframe width="{{width}}" height="{{height}}" class="youtube-embed-video" src="//www.youtube.com/embed/{{videoid}}?theme=dark&amp;amp;showinfo=1&amp;amp;loop=0&amp;amp;end=0&amp;amp;color=red&amp;amp;autoplay=0&amp;amp;autohide=2&amp;amp;rel=0&amp;amp;enablejsapi=1" style="border: none;"></iframe>
+    </template>
+
+    <script>
+        Polymer('utube-embed', {
+            videoid     : 'videoid',
+            theme       : 'dark',
+            width       : '400px',
+            height      : '300px'
+        });
+    </script>
+
+
+</polymer-element>

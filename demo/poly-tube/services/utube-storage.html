@@ -1,0 +1,79 @@
+<!--
+Handles localStorage operations.
+-->
+
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+<polymer-element name="utube-storage" attributes="posts">
+  <template>
+    <style>
+    :host {
+      display: none;
+    }
+    </style>
+
+  </template>
+  <script>
+
+  Polymer('utube-storage', {
+
+    created: function(){
+      this.loadResults();
+    },
+
+    posts: [],
+
+    length: 0,
+
+    saveResults: function(key, results){
+      if (localStorage.getItem(key) === null) {
+        localStorage.setItem(key, JSON.stringify(results));
+        this.updatePosts(key, results);
+      }
+      
+    },
+
+    updatePosts: function(key, results){
+      this.length++;
+      this.posts.push({id: this.length, title: key, results: results});
+    },
+
+    loadResults: function(){
+      this.length = 0;
+      this.posts = [];
+      for(var i=0; i<localStorage.length; i++){
+        var sKey = localStorage.key(i);
+        var sResults = localStorage.getItem(localStorage.key(i));
+        if (sResults !== "undefined"){
+          this.length++;
+          this.posts.push({ id: this.length, title: sKey, results: JSON.parse(sResults)});
+        }
+      }
+    },
+
+    removeResult: function(key){
+      localStorage.removeItem(key);
+      this.loadResults();
+    },
+
+    removeVideo: function(id, videoID){
+      var videoList = [];
+      var filterList = [];
+      for(var i=0; i<this.posts.length; i++){
+        if (this.posts[i].id === id) {
+          videoList = this.posts[i].results.items.slice(0);
+          for(var j = 0; j < videoList.length; j++) {
+            if(videoList[j].id.videoId !== videoID){
+              filterList.push(videoList[j])
+            }
+          }
+          this.posts[i].results.items = filterList;
+          localStorage.setItem(this.posts[i].title, JSON.stringify(this.posts[i].results));
+          return;
+        }
+      }
+    }
+
+  });
+  </script>
+</polymer-element>
